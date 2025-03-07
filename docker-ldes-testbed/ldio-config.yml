@@ -4,4 +4,3 @@ springdoc:
   logging:
     level:
       be.vlaanderen.informatievlaanderen: DEBUG
-

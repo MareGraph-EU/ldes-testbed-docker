@@ -4,7 +4,7 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 # grab input params / or fallback to defaults
-reponame=${1:-"test-repo"} 
+reponame=${1:-"mr-sync"} 
 gdburl=${2:-"http://localhost:7200"}
 repocfg_template=${3:-"${DIR}/gdb-repo-config-template.ttl"}
 
