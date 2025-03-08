@@ -1,0 +1,57 @@
+services:
+  graphdb:
+    # see also:
+    # - docker-hub: https://hub.docker.com/r/ontotext/graphdb
+    #
+    # effectively will create:
+    # - api endpoint: http://localhost:${GDB_PORT:-7200}/rest
+    # - UI          : http://localhost:${GDB_PORT:-7200}/
+    image: ontotext/graphdb:10.6.4
+    container_name: graphdb
+    restart: unless-stopped
+    environment:
+      JAVA_OPTS: "-Xmx4g -Xms4g"
+    ports:
+      - "${GDB_PORT:-7200}:7200"
+
+  ldio-workbench:
+    # see also:
+    # - docker-hub: https://hub.docker.com/r/ldes/ldi-orchestrator
+    # - docs:       https://informatievlaanderen.github.io/VSDS-Linked-Data-Interactions/
+    # - github:     https://github.com/Informatievlaanderen/VSDS-Linked-Data-Interactions
+    #
+    # effectively will create:
+    # - api endpoint: http://localhost:${LDIO_PORT:-8080}/admin/api/v1
+    #   with resources
+    #                 http://localhost:${LDIO_PORT:-8080}/admin/api/v1/pipeline             --> all running pipelines
+    #                 http://localhost:${LDIO_PORT:-8080}/admin/api/v1/pipeline/ldes-client --> all running ldes-clients
+    # - swagger ui:   http://localhost:${LDIO_PORT:-8080}/v1/swagger                        --> see ./ldio-config.yml
+    image: ldes/ldi-orchestrator:2.12.0
+    container_name: ldio-workbench
+    healthcheck:
+      test:
+        ["CMD", "wget", "-qO-", "http://ldio-workbench:8080/actuator/health"]
+      interval: 12s
+      timeout: 3s
+      retries: 12
+    volumes:
+      - ./ldio-config.yml:/ldio/application.yml:ro
+    ports:
+      - "${LDIO_PORT:-8080}:8080"
+
+  # ldes-test-coordinator:
+  #   build:
+  #     context: ./ldes-test-coordinator
+  #   image: ${REG:-ldes-testbed-docker}/ldes-test-coordinator:${TAG}
+  #   depends_on:
+  #     graphdb:
+  #       condition: service_started
+  #     ldio-workbench:
+  #       condition: service_healthy
+  #   volumes:
+  #     - ${IO_PATH:-../io}:/io  # here will be ./jobs, ./results and...
+  #   environment:
+  #     - LDIO=http://ldio-workbench:8080
+  #     - GRAPHDB=http://graphdb:7200
+  #   ports:
+  #     - "${UI_PORT:-4444}:4444"

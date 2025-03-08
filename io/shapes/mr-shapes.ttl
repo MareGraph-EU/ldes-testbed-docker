@@ -1,0 +1,284 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix mr: <http://marineregions.org/ns/ontology#> .
+@prefix mrt: <http://marineregions.org/ns/placetypes#> .
+@prefix dc: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix gsp: <http://www.opengis.net/ont/geosparql#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix hydra: <http://www.w3.org/ns/hydra/core#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+
+@base <http://marineregions.org/ns/shape#> . 
+
+<#FeatureShape>
+  a sh:NodeShape ;
+  sh:targetClass mr:MRGeoObject ;
+
+  sh:property [
+    sh:path mr:mrgid ;
+    sh:datatype xsd:nonNegativeInteger ;
+    sh:severity sh:Info ;
+    sh:message "A Feature may have an MRGID (mr:mrgid) as a non-negative integer." ;
+  ] ;
+  sh:property [
+    sh:path mr:hasGeometry ;
+    sh:nodeKind sh:IRI ;
+    sh:class <http://www.opengis.net/ont/sf#Geometry> ;
+    sh:severity sh:Info ;
+    sh:message "A Feature may have a Geometry (<http://www.opengis.net/ont/sf#Geometry>)." ;
+  ] ;
+  sh:property [
+    sh:path mr:inContextOf ;
+    sh:nodeKind sh:IRI ;   #**
+    sh:severity sh:Info ;
+    sh:message "A Feature may have a context (skos:scopeNote)." ;
+  ] ;
+  sh:property [
+    sh:path mr:isRelatedTo ;
+    sh:nodeKind sh:IRI ;
+    sh:class mr:Feature ;
+    sh:severity sh:Info ;
+    sh:message "A Feature may refer to another semantically related Feature (mr:isRelatedTo), which must be of type mr:Feature." ;
+  ] ;
+.
+
+# **confusion: 
+# mr:inContextOf defined as ObjectProperty, is subclass of skos:conceptNote which is also defined as ObjectProperty with rdfs:Resource as range;
+# this means the value of the property can be a resource, which might include literals or other resources like documents
+# so, specifying sh:nodeKind as sh:IRI seems both incomplete & wrong...
+
+
+<#MRGeoObjectShape>
+  a sh:NodeShape ;
+  sh:targetClass mr:MRGeoObject ;
+
+  sh:property [
+    sh:path mr:mrgid ;
+    sh:nodeKind sh:IRI ;
+    sh:cardinality 1 ;
+    sh:severity sh:Violation ;
+    sh:message "A geo-object must have at exactly one MRGID (mr:mrgid)." ;
+  ] ; 
+
+  sh:property [
+    sh:path skos:prefLabel ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:severity sh:Info ;                                                                   # https://www.w3.org/TR/shacl/#results-severity
+    sh:message "A geo-object must have at least one preferred label (skos:prefLabel)." ;
+  ] ;
+
+  sh:property [
+    sh:path rdf:type ;
+    sh:hasValue mrt:PlaceType ;
+  ] ;
+  
+  sh:property [
+    sh:path rdfs:isDefinedBy ;
+    sh:hasValue <http://marineregions.org> ;
+  ] ;
+
+  sh:property [
+    sh:path mr:hasGeometry ;
+    sh:nodeKind sh:IRI ;
+    sh:class <http://www.opengis.net/ont/sf#Geometry> ;
+    sh:message "A geo-object may reference a geometry using mr:hasGeometry." ;
+  ] ;
+
+  sh:property [
+    sh:path mr:inContextOf ;
+    sh:nodeKind sh:IRI ;
+    sh:severity sh:Info ;
+    sh:message "A Feature may have a context (skos:scopeNote)." ;
+  ] ;
+
+  sh:property [
+    sh:path mr:isRelatedTo;
+    sh:nodeKind sh:IRI ;
+    sh:severity sh:Info ;
+    sh:message "A geo-object may reference one or more related entities using mr:isRelatedTo or one of its subclasses." ;
+  ] ;
+
+  sh:property [
+    sh:path mr:isPartOf;
+    sh:nodeKind sh:IRI ;
+    sh:severity sh:Info ;
+    sh:message "A geo-object may reference one or more related entities using mr:isPartOf." ;
+  ] ;
+
+  sh:property [
+    sh:path mr:contains;
+    sh:nodeKind sh:IRI ;
+    sh:severity sh:Info ;
+    sh:message "A geo-object may reference one or more related entities using mr:contains." ;
+  ] ;
+
+  sh:property [
+    sh:path mr:isAdministrativePartOf;
+    sh:nodeKind sh:IRI ;
+    sh:severity sh:Info ;
+    sh:message "A geo-object may reference one or more related entities using mr:isAdministrativePartOf." ;
+  ] ;
+
+  sh:property [
+    sh:path mr:isPartlyPartOf;
+    sh:nodeKind sh:IRI ;
+    sh:severity sh:Info ;
+    sh:message "A geo-object may reference one or more related entities using mr:isPartlyPartOf." ;
+  ] ;
+
+  sh:property [
+    sh:path mr:partlyContains;
+    sh:nodeKind sh:IRI ;
+    sh:severity sh:Info ;
+    sh:message "A geo-object may reference one or more related entities using mr:partlyContains." ;
+  ] ;
+
+  sh:property [
+    sh:path mr:flowsInto;
+    sh:nodeKind sh:IRI ;
+    sh:severity sh:Info ;
+    sh:message "A geo-object may reference one or more related entities using mr:flowsInto." ;
+  ] ;
+
+  sh:property [
+    sh:path mr:hasTributary;
+    sh:nodeKind sh:IRI ;
+    sh:severity sh:Info ;
+    sh:message "A geo-object may reference one or more related entities using mr:hasTributary." ;
+  ] ;
+
+  sh:property [
+    sh:path mr:risesIn;
+    sh:nodeKind sh:IRI ;
+    sh:severity sh:Info ;
+    sh:message "A geo-object may reference one or more related entities using mr:risesIn." ;
+  ] ;
+
+  sh:property [
+    sh:path mr:containsSourceOf;
+    sh:nodeKind sh:IRI ;
+    sh:severity sh:Info ;
+    sh:message "A geo-object may reference one or more related entities using mr:containsSourceOf." ;
+  ] ;
+
+  sh:property [
+    sh:path mr:flowsThrough;
+    sh:nodeKind sh:IRI ;
+    sh:severity sh:Info ;
+    sh:message "A geo-object may reference one or more related entities using mr:flowsThrough." ;
+  ] ;
+
+  sh:property [
+    sh:path mr:containsWatercourse;
+    sh:nodeKind sh:IRI ;
+    sh:severity sh:Info ;
+    sh:message "A geo-object may reference one or more related entities using mr:containsWatercourse." ;
+  ] ;
+
+  sh:property [
+    sh:path mr:isReplacedBy;
+    sh:nodeKind sh:IRI ;
+    sh:severity sh:Info ;
+    sh:message "A geo-object may reference one or more related entities using mr:isReplacedBy." ;
+  ] ;
+
+  sh:property [
+    sh:path mr:replaces;
+    sh:nodeKind sh:IRI ;
+    sh:severity sh:Info ;
+    sh:message "A geo-object may reference one or more related entities using mr:replaces." ;
+  ] ;
+
+  sh:property [
+    sh:path mr:isInfluencedBy;
+    sh:nodeKind sh:IRI ;
+    sh:severity sh:Info ;
+    sh:message "A geo-object may reference one or more related entities using mr:isInfluencedBy." ;
+  ] ;
+
+  sh:property [
+    sh:path mr:influences;
+    sh:nodeKind sh:IRI ;
+    sh:severity sh:Info ;
+    sh:message "A geo-object may reference one or more related entities using mr:influences." ;
+  ] ;
+
+  sh:property [
+    sh:path mr:isAdjacentTo;
+    sh:nodeKind sh:IRI ;
+    sh:severity sh:Info ;
+    sh:message "A geo-object may reference one or more related entities using mr:isAdjacentTo." ;
+  ] ;
+
+  sh:property [
+    sh:path mr:isPreferredAlternativeOf;
+    sh:nodeKind sh:IRI ;
+    sh:severity sh:Info ;
+    sh:message "A geo-object may reference one or more related entities using mr:isPreferredAlternativeOf." ;
+  ] ;
+
+  sh:property [
+    sh:path mr:hasPreferredAlternative ;
+    sh:nodeKind sh:IRI ;
+    sh:severity sh:Info ;
+    sh:message "A geo-object may reference one or more related entities using mr:hasPreferredAlternative." ;
+  ] ;
+
+  sh:property [
+    sh:path prov:hadPrimarySource ;
+    sh:nodeKind sh:IRI ;
+    sh:minCount 1 ;
+    sh:message "A geo-object must have a primary source defined with prov:hadPrimarySource." ;
+  ] ;
+
+  sh:property [
+    sh:path dc:modified ;
+    sh:datatype xsd:dateTime ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:severity sh:Violation ;
+    sh:message "A geo-object must have a single modification timestamp (dc:modified)." ;
+  ] ;
+
+  sh:property [
+    sh:path skos:altLabel ;
+    sh:datatype xsd:string ;
+    sh:minCount 0 ;
+    sh:severity sh:Info ;
+    sh:message "A geo-object may have alternate labels (skos:altLabel)." ;
+  ] ;
+
+  #to check/add
+  sh:property [
+    sh:path dcat:centroid ;
+    sh:datatype gsp:wktLiteral ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:message "A geo-object must have a centroid defined as a WKT literal (dcat:centroid)." ;
+  ] ;
+
+  sh:property [
+    sh:path dcat:bbox ;
+    sh:datatype gsp:wktLiteral ;
+    sh:minCount 0 ;
+    sh:maxCount 1 ;
+    sh:message "A geo-object may have a bounding box defined as a WKT literal (dcat:bbox)." ;
+  ] ;
+
+
+  sh:property [
+    sh:path hydra:next ;
+    sh:nodeKind sh:IRI ;
+    sh:minCount 0 ;
+    sh:maxCount 1 ;
+    sh:message "A geo-object may include a hydra:next link for pagination." ;
+  ] .
+
+
+
+
+

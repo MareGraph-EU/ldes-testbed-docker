@@ -1,0 +1,6 @@
+springdoc:
+  swagger-ui:
+    path: /v1/swagger
+  logging:
+    level:
+      be.vlaanderen.informatievlaanderen: DEBUG
