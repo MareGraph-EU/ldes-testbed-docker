@@ -5,7 +5,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 # grab input params / or fallback to defaults
 reponame=${1:-"mr-sync"}
-shaclfile=${2:-"shapes.ttl"}
+shaclfile=${2:-"${DIR}/shapes.ttl"}
 gdburl=${3:-"http://localhost:7200"}
 
 # validate the repo

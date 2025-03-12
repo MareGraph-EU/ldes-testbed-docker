@@ -67,25 +67,26 @@
     sh:path skos:prefLabel ;
     sh:datatype xsd:string ;
     sh:minCount 1 ;
-    sh:severity sh:Info ;                                                                   # https://www.w3.org/TR/shacl/#results-severity
+    sh:severity sh:Violation ;                                                                   # https://www.w3.org/TR/shacl/#results-severity
     sh:message "A geo-object must have at least one preferred label (skos:prefLabel)." ;
   ] ;
 
   sh:property [
     sh:path rdf:type ;
-    sh:hasValue mrt:PlaceType ;
-  ] ;
-  
-  sh:property [
-    sh:path rdfs:isDefinedBy ;
-    sh:hasValue <http://marineregions.org> ;
+    sh:nodeKind sh:IRI ;  # Ensures rdf:type is an IRI, not a literal
+    sh:or (
+        [ sh:pattern "^http://marineregions.org/ns/ontology#.*$" ]  # Matches "mr:"
+        [ sh:pattern "^http://marineregions.org/ns/placetypes#.*$" ] # Matches "mrt:"
+    ) ;
+    sh:message "rdf:type must be either MRGeoObject or placetpye" ;
   ] ;
 
   sh:property [
     sh:path mr:hasGeometry ;
     sh:nodeKind sh:IRI ;
-    sh:class <http://www.opengis.net/ont/sf#Geometry> ;
-    sh:message "A geo-object may reference a geometry using mr:hasGeometry." ;
+    #sh:class <http://www.opengis.net/ont/sf#Geometry> ;                               # Geometries are missing rdf:type (e.g. https://marineregions.org/mrgid/4332/geometries.ttl?source=25&attributeValue=49 )
+    sh:pattern "^http://marineregions.org/mrgid/[0-9]+(?:\\?t=[0-9]+)?/geometries(?:\\?.*)?$" ;
+    sh:message "The IRI must follow the pattern 'http://marineregions.org/mrgid/{ID}[?t=timestamp]/geometries[?queryParams]' where {ID} is numeric, and optional timestamp and query parameters are allowed." ;
   ] ;
 
   sh:property [
@@ -230,9 +231,11 @@
 
   sh:property [
     sh:path prov:hadPrimarySource ;
-    sh:nodeKind sh:IRI ;
-    sh:minCount 1 ;
-    sh:message "A geo-object must have a primary source defined with prov:hadPrimarySource." ;
+    sh:or (
+      [sh:nodeKind sh:IRI ; ]
+      [sh:nodeKind sh:BlankNode ; ]
+    ) ;
+    sh:message "A geo-object may have a primary source defined with prov:hadPrimarySource." ;
   ] ;
 
   sh:property [
@@ -247,7 +250,6 @@
   sh:property [
     sh:path skos:altLabel ;
     sh:datatype xsd:string ;
-    sh:minCount 0 ;
     sh:severity sh:Info ;
     sh:message "A geo-object may have alternate labels (skos:altLabel)." ;
   ] ;
@@ -256,9 +258,9 @@
   sh:property [
     sh:path dcat:centroid ;
     sh:datatype gsp:wktLiteral ;
-    sh:minCount 1 ;
     sh:maxCount 1 ;
-    sh:message "A geo-object must have a centroid defined as a WKT literal (dcat:centroid)." ;
+    sh:severity sh:Violation ;
+    sh:message "A geo-object may have one centroid defined as a WKT literal (dcat:centroid)." ;
   ] ;
 
   sh:property [
@@ -266,6 +268,7 @@
     sh:datatype gsp:wktLiteral ;
     sh:minCount 0 ;
     sh:maxCount 1 ;
+    sh:severity sh:Violation ;
     sh:message "A geo-object may have a bounding box defined as a WKT literal (dcat:bbox)." ;
   ] ;
 
@@ -275,6 +278,7 @@
     sh:nodeKind sh:IRI ;
     sh:minCount 0 ;
     sh:maxCount 1 ;
+    sh:severity sh:Violation ;
     sh:message "A geo-object may include a hydra:next link for pagination." ;
   ] .
 
