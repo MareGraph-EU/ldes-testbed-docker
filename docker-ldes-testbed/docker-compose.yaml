@@ -39,6 +39,64 @@ services:
     ports:
       - "${LDIO_PORT:-8080}:8080"
 
+  prometheus:
+    # see also:
+    # - docker-hub: https://hub.docker.com/r/prom/prometheus
+    # - website:   https://prometheus.io/
+    #
+    # effectively will create enternal service at http://prometheus:9090
+    # - basic UI: http://localhost:${PROM_PORT:-9090}/query
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus-config.yml:/etc/prometheus/prometheus.yml:ro
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--web.console.templates=/etc/prometheus/consoles"
+      - "--web.enable-lifecycle"
+    expose:
+      - 9090
+    deploy:
+      resources:
+        limits:
+          cpus: "0.75"
+          memory: "0.75GB"
+        reservations:
+          cpus: "0.50"
+          memory: "0.5GB"
+    ports:
+      - "${PROM_PORT:-9090}:9090"
+
+  grafana:
+    # see also:
+    # - docker-hub: https://hub.docker.com/r/grafana/grafana-oss
+    # - website:   https://grafana.com/
+    #
+    # effectively will create:
+    # - dashboard ui:   http://localhost:${GRAF_PORT:-3000}/dashboards
+    image: grafana/grafana-oss:main
+    container_name: grafana
+    volumes:
+      - ./grafana-provisioning:/etc/grafana/provisioning
+      - ./grafana.ini:/etc/grafana/grafana.ini:ro
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://grafana:3000/api/health"]
+      interval: 12s
+      timeout: 3s
+      retries: 20
+    deploy:
+      resources:
+        limits:
+          cpus: "0.75"
+          memory: "0.75GB"
+        reservations:
+          cpus: "0.50"
+          memory: "0.5GB"
+    ports:
+      - "${GRAF_PORT:-3000}:3000"
+
   # ldes-test-coordinator:
   #   build:
   #     context: ./ldes-test-coordinator

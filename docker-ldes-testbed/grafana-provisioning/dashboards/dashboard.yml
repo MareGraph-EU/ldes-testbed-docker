@@ -1,0 +1,13 @@
+apiVersion: 1
+
+providers:
+  - name: "LDIO In/Out Overview"
+    orgId: 1
+    folder: ""
+    type: file
+    disableDeletion: false
+    editable: true
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards
+      # NOTE - the actual dashboards in this folder can be exported from grafana UI as so called "JSON model"

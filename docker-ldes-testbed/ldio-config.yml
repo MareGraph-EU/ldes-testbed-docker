@@ -4,3 +4,10 @@ springdoc:
   logging:
     level:
       be.vlaanderen.informatievlaanderen: DEBUG
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - prometheus
+          - health

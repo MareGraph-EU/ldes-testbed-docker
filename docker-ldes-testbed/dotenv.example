@@ -1,0 +1,45 @@
+# Usage:
+# Make a copy of this file to a local .env file and change settings as needed
+
+# ----
+# Set the docker-compose name for this stack
+#  - defaults to the name of the containing folder
+#  - only change this if you want to run a second instance of the stack on the same host
+#COMPOSE_PROJECT_NAME="docker-ldes-testbed"
+
+# ----
+# Set the output_folder to use during test 
+#  - if not set a tmp folder will be created and removed
+#TEST_OUTFOLDER=/tmp/test_ldes_docker
+
+# ----
+# Set the exposed port number for the graphdb triple store
+#  - defaults to 7200
+#GDB_PORT=7200
+
+# ----
+# Set the exposed port number for the ldio framework (exposes api and swagger ui)
+#  - defaults to 8080
+#LDIO_PORT=8080
+
+# ----
+# Set the exposed port number for the prometheus stats aggregator service
+#  - defaults to 9090
+#PROM_PORT=9090
+
+# ----
+# Set the exposed port number for the grafana UI
+#  - defaults to 3000
+#GRAF_PORT=3000
+
+# ----
+# Set the exposed port number for the web ui of the coordinator
+#  - defaults to 4444
+#UI_PORT=4444 
+
+# ----
+# Set the local folder (relative to ./docker/docker-compose.yml) provided as 'io' volume with the cooordinator
+#  - defaults to ../io
+#IO_PATH=../io
+
+# ----
